@@ -18,7 +18,7 @@
 
 import { Readable, Writable, Transform } from 'node:stream';
 
-class OneToHundredStrem extends Readable {
+class OneToHundredStream extends Readable {
     index = 1;
 
     _read() {
@@ -51,9 +51,9 @@ class InverseNumberStream extends Transform {
     }
 }
 
-// new OneToHundredStrem()
+// new OneToHundredStream()
 //    .pipe(process.stdout); // Canaliza o retorno pra saída primária (Terminal)
 
-new OneToHundredStrem() // Readable
+new OneToHundredStream() // Readable
     .pipe(new InverseNumberStream()) // Transform
     .pipe(new MultiplyByTenStream()); // Writable - Canaliza o retorno pra stream de escrita
