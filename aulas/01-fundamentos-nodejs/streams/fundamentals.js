@@ -16,7 +16,7 @@
 // process.stdin
 //    .pipe(process.stdout); // Entrada e saída primária de dados
 
-import { Readable } from 'node:stream';
+import { Readable, Writable, Transform } from 'node:stream';
 
 class OneToHundredStrem extends Readable {
     index = 1;
@@ -36,5 +36,24 @@ class OneToHundredStrem extends Readable {
     }
 }
 
-new OneToHundredStrem()
-    .pipe(process.stdout); // Canaliza o retorno pra saída primária (Terminal)
+class MultiplyByTenStream extends Writable {
+    _write (chunk, encoding, callback) { // Stream de escrita não retorna nada. Ela apenas processa o dado.
+        console.log(Number(chunk.toString()) * 10);
+        callback();
+    }
+}
+
+class InverseNumberStream extends Transform {
+    _transform(chunk, encoding, callback) {
+        const transformed = Number(chunk.toString()) * -1;
+
+        callback(null, Buffer.from(String(transformed)));
+    }
+}
+
+// new OneToHundredStrem()
+//    .pipe(process.stdout); // Canaliza o retorno pra saída primária (Terminal)
+
+new OneToHundredStrem() // Readable
+    .pipe(new InverseNumberStream()) // Transform
+    .pipe(new MultiplyByTenStream()); // Writable - Canaliza o retorno pra stream de escrita
